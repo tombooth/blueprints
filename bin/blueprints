@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+var cli = require('cli'),
+    blueprints = require('../');
+
+
+
+cli.parse({
+   watch: ['w', 'Update whenever the files change'],
+   minify: ['m', 'Minify the output using uglify'],
+   output: ['o', 'Pipe the output to this file', 'file', null]
+});
+
+
+cli.main(function(args, options) {
+
+   new blueprints(args[0]).out(options.output ? require('fs').createWriteStream(options.output) : process.stdout);
+
+});
