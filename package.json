@@ -1,5 +1,10 @@
 
 { "name"          : "blueprints",
+  "author"        : {
+    "name"  : "Tom Booth",
+    "email" : "tombooth@gmail.com",
+    "url"   : "http://thomasbooth.co.uk"
+  },
   "description"   : "",
   "version"       : "0.0.1",
   "main" : "./src/main.js",
@@ -8,7 +13,7 @@
   },
   "engines": { "node": "0.6.x" },
   "dependencies": {
-    "cli": "3.x.x",
+    "cli": "0.4.x",
     "htmlparser": "1.x.x",
     "uglify-js": "1.x.x",
     "seq": "x.x.x"
