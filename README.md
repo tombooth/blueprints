@@ -29,7 +29,10 @@ it using the window.blueprints function passing in the id of the template and an
 data variable.
 
 ```javascript
-var element = window.blueprints('list', { something: true, xs: [ { name:'foo' }, { name:'bar' } ] });
+var element = window.blueprints('list', { 
+   something: true, 
+   xs: [ { name:'foo' }, { name:'bar' } ] 
+});
 ```
 
 Here is a slightly more compiles template directory and the ids that correspond to the different files.
