@@ -8,21 +8,21 @@ var Seq = require('seq'),
 function blueprints(path, options) {
 
    options = options || { };
-   this.token_regex = options.token_regex || /{{(.+?)}}/g;
+   this.token_regex = options.token_regex || /##(.+?)##/g;
    this.namespace_separator = options.namespace_separator || ':';
    this.template_extension = options.template_extension || '.html';
+   this.minify = options.minify;
 
    this.path = path;
    this._tokens = [ ];
+   this._processed_token_regex = /##(.+?)##/g;
 }
 
 
-blueprints.prototype.out = function(stream) {
+blueprints.prototype.out = function(stream, fn) {
 
    this._walk(this.path, (function(files) { 
       var that = this;
-
-      //console.log(require('util').inspect(files, false, 3, true)); 
 
       Seq(this._flatten(files))
          .seqMap(function(file) { 
@@ -34,8 +34,8 @@ blueprints.prototype.out = function(stream) {
          .seqMap(function(file) {
              var flattened = that._flatten(file.dom);
 
-             file.fn = 'blueprints._store["' + file.id +'"] = function(data) {\n' +
-                          '\tvar fragment = document.createDocumentFragment();\n\t' +
+             file.fn = 'blueprints._s["' + file.id +'"] = function(data) {\n' +
+                          '\tvar fragment = doc.createDocumentFragment();\n\t' +
                            flattened.map(that._gen_code.bind(that)).join('\n\t') +
                           '\treturn fragment;\n' +
                        '};\n';
@@ -44,10 +44,27 @@ blueprints.prototype.out = function(stream) {
           })
          .unflatten()
          .seq(function(files) {
-             stream.write('(function() {\n\nfunction blueprints(id, data) {\n\treturn blueprints._store[id](data, blueprints);\n}\n', 'utf8');
-             stream.write('\nblueprints._store = { };\n', 'utf8');
-             stream.write(files.map(function(file) { return file.fn; }).join('\n\n'), 'utf8');
-             stream.write('window.blueprints = blueprints;\n})();', 'utf8');
+             var src = '';
+
+             src += '(function(doc) {\n\nfunction blueprints(id, data) {\n\treturn blueprints._s[id](data, blueprints);\n}\n', 'utf8';
+             src += '\nblueprints._s = { };\n', 'utf8';
+             src += files.map(function(file) { return file.fn; }).join('\n\n'), 'utf8';
+             src += 'window.blueprints = blueprints;\n})(document);', 'utf8';
+
+             if (!that.minify) stream.write(src);
+             else {
+                var parser = uglify.parser,
+                    processor = uglify.uglify,
+                    ast = parser.parse(src);
+
+                ast = processor.ast_mangle(ast);
+                ast = processor.ast_squeeze(ast);
+
+                stream.write(processor.gen_code(ast));
+             }
+
+             fn && fn();
+                
           });
 
 
@@ -99,7 +116,7 @@ blueprints.prototype._pre_process = function(html) {
 
    while (match = this.token_regex.exec(html)) {
       out += html.substring(cursor, match.index);
-      out += '{{' + this._tokens.length + '}}';
+      out += '##' + this._tokens.length + '##';
 
       this._tokens.push(match[1].trim());
 
@@ -135,7 +152,7 @@ blueprints.prototype._flatten = function(arr, parent) {
 };
 
 blueprints.prototype._gen_text_node = function(text, parent) {
-   return text ? parent + '.appendChild(document.createTextNode(decodeURI("' + encodeURI(text) + '")));' : '';
+   return text ? parent + '.appendChild(doc.createTextNode(decodeURI("' + encodeURI(text) + '")));' : '';
 };
 
 blueprints.prototype._gen_code = function(elem, index) {
@@ -151,7 +168,7 @@ blueprints.prototype._gen_code = function(elem, index) {
          var attrs = elem.attribs ? Object.keys(elem.attribs) : [],
              attr_value;
 
-         src.push('var ' + elem.var_name + ' = document.createElement("' + elem.name + '");');
+         src.push('var ' + elem.var_name + ' = doc.createElement("' + elem.name + '");');
 
          for (var i = 0, l = attrs.length; i < l; i++) {
             attr_value = elem.attribs[attrs[i]];
@@ -162,7 +179,7 @@ blueprints.prototype._gen_code = function(elem, index) {
                this.token_regex.lastIndex = 0;
 
                src.push('var ' + attr_var + ' = "";');
-               while (match = this.token_regex.exec(attr_value)) {
+               while (match = this._processed_token_regex.exec(attr_value)) {
                   src.push(attr_var + ' += "' + attr_value.substring(cursor, match.index) + '";');
                   
                   code = this._tokens[match[1]].trim();
@@ -191,13 +208,13 @@ blueprints.prototype._gen_code = function(elem, index) {
       case 'text':
          var text = elem.data;
 
-         while (match = this.token_regex.exec(text)) {
+         while (match = this._processed_token_regex.exec(text)) {
             src.push(this._gen_text_node(text.substring(cursor, match.index), parent_var));
 
             code = this._tokens[match[1]].trim();
             switch (code.charAt(0)) {
                case '=':
-                  src.push(parent_var + '.appendChild(document.createTextNode(' + code.substr(1).trim() + '));');
+                  src.push(parent_var + '.appendChild(doc.createTextNode(' + code.substr(1).trim() + '));');
                   break;
                case '&':
                   src.push(parent_var + '.appendChild(' + code.substr(1).trim() + ');');

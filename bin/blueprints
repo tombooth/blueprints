@@ -6,14 +6,14 @@ var cli = require('cli'),
 
 
 cli.parse({
-   watch: ['w', 'Update whenever the files change'],
    minify: ['m', 'Minify the output using uglify'],
    output: ['o', 'Pipe the output to this file', 'file', null]
 });
 
 
 cli.main(function(args, options) {
+   var stream;
 
-   new blueprints(args[0]).out(options.output ? require('fs').createWriteStream(options.output) : process.stdout);
-
+   new blueprints(args[0], { minify: options.minify })
+            .out(options.output ? (stream = require('fs').createWriteStream(options.output)) : process.stdout, function() { stream && stream.end(); });
 });

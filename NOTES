@@ -1,6 +1,0 @@
-
-<div class="{{ if (something) { }}a-class{{ } }}">
-   {{ for (var i = 0, l = xs.length; i < l; i++) { }}
-   <span>{{= xs[i].name}}</span>
-   {{ } }}
-</div>
