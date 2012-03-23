@@ -16,8 +16,8 @@ this example we will name this file list.html. Place this file in a root directo
 it using one of the methods below.
 
 root_dir/list.html
-```html
-<div class="## if (data.something) { ##a-class## } ##">
+
+```<div class="## if (data.something) { ##a-class## } ##">
    ## for (var i = 0, l = data.xs.length; i < l; i++) { ##
    <span>##= data.xs[i].name##</span>
    ## } ##
