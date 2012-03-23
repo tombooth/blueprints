@@ -46,7 +46,8 @@ blueprints.prototype.out = function(stream, fn) {
          .seq(function(files) {
              var src = '';
 
-             src += '(function(doc) {\n\nfunction blueprints(id, data) {\n\treturn blueprints._s[id](data, blueprints);\n}\n', 'utf8';
+             src += '(function(doc) {\n\nvar ce="createElement",\nct="createTextNode",\nac="appendChild",\nsa="setAttribute";\n\n';
+             src += 'function blueprints(id, data) {\n\treturn blueprints._s[id](data, blueprints);\n}\n', 'utf8';
              src += '\nblueprints._s = { };\n', 'utf8';
              src += files.map(function(file) { return file.fn; }).join('\n\n'), 'utf8';
              src += 'window.blueprints = blueprints;\n})(document);', 'utf8';
@@ -152,7 +153,7 @@ blueprints.prototype._flatten = function(arr, parent) {
 };
 
 blueprints.prototype._gen_text_node = function(text, parent) {
-   return text ? parent + '.appendChild(doc.createTextNode(decodeURI("' + encodeURI(text) + '")));' : '';
+   return text ? parent + '[ac](doc[ct](decodeURI("' + encodeURI(text) + '")));' : '';
 };
 
 blueprints.prototype._gen_code = function(elem, index) {
@@ -168,7 +169,7 @@ blueprints.prototype._gen_code = function(elem, index) {
          var attrs = elem.attribs ? Object.keys(elem.attribs) : [],
              attr_value;
 
-         src.push('var ' + elem.var_name + ' = doc.createElement("' + elem.name + '");');
+         src.push('var ' + elem.var_name + ' = doc[ce]("' + elem.name + '");');
 
          for (var i = 0, l = attrs.length; i < l; i++) {
             attr_value = elem.attribs[attrs[i]];
@@ -195,13 +196,13 @@ blueprints.prototype._gen_code = function(elem, index) {
                }
                src.push(attr_var + ' += "' + attr_value.substring(cursor, attr_value.length) + '";');
 
-               src.push(elem.var_name + '.setAttribute("' + attrs[i] + '", ' + attr_var + ');');
+               src.push(elem.var_name + '[sa]("' + attrs[i] + '", ' + attr_var + ');');
             } else {
-               src.push(elem.var_name + '.setAttribute("' + attrs[i] + '", "' + attr_value + '");');
+               src.push(elem.var_name + '[sa]("' + attrs[i] + '", "' + attr_value + '");');
             }
          }
 
-         src.push(parent_var + '.appendChild(' + elem.var_name + ');');
+         src.push(parent_var + '[ac](' + elem.var_name + ');');
 
          break;
 
@@ -214,10 +215,10 @@ blueprints.prototype._gen_code = function(elem, index) {
             code = this._tokens[match[1]].trim();
             switch (code.charAt(0)) {
                case '=':
-                  src.push(parent_var + '.appendChild(doc.createTextNode(' + code.substr(1).trim() + '));');
+                  src.push(parent_var + '[ac](doc[ct](' + code.substr(1).trim() + '));');
                   break;
                case '&':
-                  src.push(parent_var + '.appendChild(' + code.substr(1).trim() + ');');
+                  src.push(parent_var + '[ac](' + code.substr(1).trim() + ');');
                   break;
                default:
                   src.push(code);
