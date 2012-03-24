@@ -18,15 +18,15 @@ it using one of the methods below.
 root_dir/list.html
 
 ```
-<div class="## if (data.something) { ##a-class## } ##">
-   ## for (var i = 0, l = data.xs.length; i < l; i++) { ##
-   <span>##= data.xs[i].name##</span>
+<div class="## if (something) { ##a-class## } ##">
+   ## for (var i = 0, l = xs.length; i < l; i++) { ##
+   <span>##= xs[i].name##</span>
    ## } ##
 </div>
 ```
 When you include your compiled template library in your javascript web app you will be able to access
-it using the window.blueprints function passing in the id of the template and an object to become the
-data variable.
+it using the window.blueprints function passing in the id of the template and data to be used in the
+template.
 
 ```javascript
 var element = window.blueprints('list', { 

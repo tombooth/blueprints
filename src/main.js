@@ -35,9 +35,9 @@ blueprints.prototype.out = function(stream, fn) {
              var flattened = that._flatten(file.dom);
 
              file.fn = 'blueprints._s["' + file.id +'"] = function(data) {\n' +
-                          '\tvar fragment = doc[cf]();\n\t' +
+                          '\tvar fragment = doc[cf]();\n\twith (data||{}){\n\t' +
                            flattened.map(that._gen_code.bind(that)).join('\n\t') +
-                          '\treturn fragment;\n' +
+                          '\t}\n\treturn fragment;\n' +
                        '};\n';
 
              this(null, file);
