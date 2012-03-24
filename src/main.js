@@ -35,7 +35,7 @@ blueprints.prototype.out = function(stream, fn) {
              var flattened = that._flatten(file.dom);
 
              file.fn = 'blueprints._s["' + file.id +'"] = function(data) {\n' +
-                          '\tvar fragment = doc.createDocumentFragment();\n\t' +
+                          '\tvar fragment = doc[cf]();\n\t' +
                            flattened.map(that._gen_code.bind(that)).join('\n\t') +
                           '\treturn fragment;\n' +
                        '};\n';
@@ -46,7 +46,7 @@ blueprints.prototype.out = function(stream, fn) {
          .seq(function(files) {
              var src = '';
 
-             src += '(function(doc) {\n\nvar ce="createElement",\nct="createTextNode",\nac="appendChild",\nsa="setAttribute";\n\n';
+             src += '(function(doc) {\n\nvar ce="createElement",\nct="createTextNode",\nac="appendChild",\nsa="setAttribute",\ncf="createDocumentFragment";\n\n';
              src += 'function blueprints(id, data) {\n\treturn blueprints._s[id](data, blueprints);\n}\n', 'utf8';
              src += '\nblueprints._s = { };\n', 'utf8';
              src += files.map(function(file) { return file.fn; }).join('\n\n'), 'utf8';
@@ -152,8 +152,26 @@ blueprints.prototype._flatten = function(arr, parent) {
    }
 };
 
+blueprints.prototype._minimise_whitespace = function(text) {
+   var start_match = /^[\s]*\S/.exec(text),
+       end_match = /\S[\s]*$/.exec(text);
+
+   if (!start_match) return '';
+
+   if (start_match[0].length > 2) {
+      text = ' ' + text.substr(start_match[0].length - 1);
+   }
+
+   if (end_match[0].length > 2) {
+      text = text.substring(0, end_match.index - start_match[0].length + 3) + ' ';
+   }
+
+   return text;
+};
+
 blueprints.prototype._gen_text_node = function(text, parent) {
-   return text ? parent + '[ac](doc[ct](decodeURI("' + encodeURI(text) + '")));' : '';
+   if (text) text = this._minimise_whitespace(text);
+   return (text) ? parent + '[ac](doc[ct]("' + text + '"));' : '';
 };
 
 blueprints.prototype._gen_code = function(elem, index) {
