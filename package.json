@@ -6,12 +6,12 @@
     "url"   : "http://thomasbooth.co.uk"
   },
   "description"   : "",
-  "version"       : "0.0.1",
+  "version"       : "0.1.0",
   "main" : "./src/main.js",
   "bin":          {
     "blueprints":     "./bin/blueprints"
   },
-  "engines": { "node": "0.6.x" },
+  "engines": { "node": ">0.6.0" },
   "dependencies": {
     "cli": "0.4.x",
     "htmlparser": "1.x.x",
