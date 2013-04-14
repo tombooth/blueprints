@@ -47,12 +47,12 @@ blueprints.prototype.out = function(stream, fn) {
              var src = '';
 
              src += '(function(doc) {\n\nvar ce="createElement",\nct="createTextNode",\nac="appendChild",\nsa="setAttribute",\ncf="createDocumentFragment";\n\n';
-             src += 'function blueprints(id, data) {\n\treturn blueprints._s[id](data, blueprints);\n}\n', 'utf8';
-             src += '\nblueprints._s = { };\n', 'utf8';
-             src += files.map(function(file) { return file.fn; }).join('\n\n'), 'utf8';
-             src += 'window.blueprints = blueprints;\n})(document);', 'utf8';
+             src += 'function blueprints(id, data) {\n\treturn blueprints._s[id](data, blueprints);\n}\n';
+             src += '\nblueprints._s = { };\n';
+             src += files.map(function(file) { return file.fn; }).join('\n\n');
+             src += 'window.blueprints = blueprints;\n})(document);';
 
-             if (!that.minify) stream.write(src);
+             if (!that.minify) stream.write(src, 'utf8');
              else {
                 var parser = uglify.parser,
                     processor = uglify.uglify,
@@ -61,7 +61,7 @@ blueprints.prototype.out = function(stream, fn) {
                 ast = processor.ast_mangle(ast);
                 ast = processor.ast_squeeze(ast);
 
-                stream.write(processor.gen_code(ast));
+                stream.write(processor.gen_code(ast), 'utf8');
              }
 
              fn && fn();
