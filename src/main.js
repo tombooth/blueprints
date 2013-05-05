@@ -190,6 +190,7 @@ blueprints.prototype._gen_code = function(elem, index) {
          src.push('var ' + elem.var_name + ' = doc[ce]("' + elem.name + '");');
 
          for (var i = 0, l = attrs.length; i < l; i++) {
+            cursor = 0;
             attr_value = elem.attribs[attrs[i]];
 
             if (this.token_regex.test(attr_value)) {

@@ -1,17 +1,19 @@
-
-{ "name"          : "blueprints",
-  "author"        : {
-    "name"  : "Tom Booth",
-    "email" : "tombooth@gmail.com",
-    "url"   : "http://thomasbooth.co.uk"
+{
+  "name": "blueprints",
+  "author": {
+    "name": "Tom Booth",
+    "email": "tombooth@gmail.com",
+    "url": "http://thomasbooth.co.uk"
   },
-  "description"   : "",
-  "version"       : "0.1.1",
-  "main" : "./src/main.js",
-  "bin":          {
-    "blueprints":     "./bin/blueprints"
+  "description": "",
+  "version": "0.1.2",
+  "main": "./src/main.js",
+  "bin": {
+    "blueprints": "./bin/blueprints"
   },
-  "engines": { "node": ">0.6.0" },
+  "engines": {
+    "node": ">0.6.0"
+  },
   "dependencies": {
     "cli": "0.4.x",
     "htmlparser": "1.x.x",
@@ -19,7 +21,8 @@
     "seq": "x.x.x"
   },
   "devDependencies": {
-     "jsdom": "0.2.x",
-     "nodeunit": "0.7.x"
+    "jsdom": "0.x.x",
+    "nodeunit": "0.x.x",
+    "nodeunit-b": "~4.0.0"
   }
 }
