@@ -49,7 +49,27 @@ exports['test the lot'] = b({
 
       test.done();
 
-   }
+   },
+
+   'test node insertion': function(test, window) {
+
+      var document = window.document,
+          list = [ { name: 'item1' }, { name: 'item2' }, { name: 'item3' } ],
+          listElements;
+
+      document.body.appendChild(window.blueprints('node-insertion-parent', { items: list }));
+
+      listElements = window.document.querySelectorAll('li');
+      
+      test.equal(listElements.length, 3);
+
+      for (var i = 0; i < listElements.length; i++) {
+         test.equal(listElements[i].innerHTML, list[i].name);
+      }
+
+      test.done();
+
+   },
 
 });
 
