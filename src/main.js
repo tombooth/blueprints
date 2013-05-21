@@ -158,12 +158,12 @@ blueprints.prototype._minimise_whitespace = function(text) {
 
    if (!start_match) return '';
 
-   if (start_match[0].length > 2) {
+   if (start_match[0].length >= 2) {
       text = ' ' + text.substr(start_match[0].length - 1);
    }
 
-   if (end_match[0].length > 2) {
-      text = text.substring(0, end_match.index - start_match[0].length + 3) + ' ';
+   if (end_match[0].length >= 2) {
+      text = text.substring(0, text.length - (end_match[0].length - 1)) + ' ';
    }
 
    return text;

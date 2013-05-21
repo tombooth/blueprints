@@ -71,6 +71,26 @@ exports['test the lot'] = b({
 
    },
 
+   'test ending whitespace stripping': function(test, window) {
+
+      var document = window.document,
+          list = [ 'a', 'b', 'c' ],
+          listElements;
+
+      document.body.appendChild(window.blueprints('ending-whitespace', { list: list }));
+
+      listElements = window.document.querySelectorAll('li');
+      
+      test.equal(listElements.length, 3);
+
+      for (var i = 0; i < listElements.length; i++) {
+         test.equal(listElements[i].innerHTML, ' (' + list[i] + ') ');
+      }
+
+      test.done();
+
+   }
+
 });
 
 
